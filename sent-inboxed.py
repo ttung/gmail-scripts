@@ -24,19 +24,35 @@ def main():
     Service.get()
 
     try:
-        labelid = GmailLabel.get_id('meta/read-once')
-        trashlabel = GmailLabel.get_id('TRASH', system=True)
+        inbox_labelid = GmailLabel.get_id('INBOX', system=True)
+        sent_inboxed_labelid = GmailLabel.get_id('meta/sent-inboxed')
 
-        def move(messages):
+        def apply_labels(messages):
+            """
+            Apply the INBOX and meta/sent-inboxed labels to the messages.
+            """
             relabel_messages(
-                [message['id']
-                 for message in messages],
+                [message['id'] for message in messages],
                 [],
-                [trashlabel])
+                [inbox_labelid, sent_inboxed_labelid])
 
-        get_messages(move,
-                     labelIds=[labelid],
-                     q='older_than:7d !in:inbox')
+        get_messages(
+            apply_labels,
+            q='in:Sent !label:meta/sent-inboxed newer_than:1d')
+
+        def clear_label(messages):
+            """
+            Remove meta/sent-inboxed from messages.
+            """
+            relabel_messages(
+                [message['id'] for message in messages],
+                [sent_inboxed_labelid],
+                [])
+
+        get_messages(
+            clear_label,
+            q='label:meta/sent-inboxed older_than:2d'
+        )
 
     except client.AccessTokenRefreshError:
         print('The credentials have been revoked or expired, please re-run'

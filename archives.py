@@ -27,7 +27,7 @@ def main():
         archives_labelid = GmailLabel.get_id('archives')
         personal_mail_labelid = GmailLabel.get_id('archives/personal-mail')
 
-        def apply_label(messages):
+        def apply_personal_mail_label(messages):
             service = Service.get()
             batch = service.new_batch_http_request()
 
@@ -63,12 +63,25 @@ def main():
                 relabel_messages(
                     [messageid
                      for messageid, _ in apply_queue],
-                    [archives_labelid],
+                    [],
                     [personal_mail_labelid])
 
         get_messages(
-            apply_label,
-            q='(has:nouserlabels OR label:archives) !in:inbox')
+            apply_personal_mail_label,
+            q='label:archives !in:inbox !label:archives/personal-mail')
+
+        def apply_both_labels(messages):
+            relabel_messages(
+                [message['id']
+                 for message in messages],
+                [archives_labelid],
+                [])
+
+        get_messages(
+            apply_both_labels,
+            labelIds=[archives_labelid, personal_mail_labelid],
+            q='has:nouserlabels !in:inbox'
+        )
 
         def clear_label(messages):
             relabel_messages(
