@@ -35,7 +35,7 @@ def main():
         get_messages(
             apply_vault_label,
             labelIds=[],
-            q='has:nouserlabels !in:inbox !in:draft !in:snoozed !label:vault newer_than:45d'
+            q='has:nouserlabels !in:inbox !in:draft !in:snoozed !label:vault'
         )
 
         def apply_related_label(messages):
@@ -89,7 +89,7 @@ def main():
                     label_ids.remove(vault_label_id)
                     for label_id in label_ids.copy():
                         label_info = GmailLabel.get_label(label_id)
-                        if label_info is not None or label_info['type'] != 'user':
+                        if label_info is not None and label_info['type'] != 'user':
                             label_ids.remove(label_id)
 
                     message_ids = [
@@ -119,7 +119,7 @@ def main():
                 relabel_messages(
                     message_ids,
                     [],
-                    label_ids)
+                    list(label_ids))
             if len(personal_mail_messages_ids) > 0:
                 relabel_messages(
                     personal_mail_messages_ids,
