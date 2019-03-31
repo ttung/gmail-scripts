@@ -140,7 +140,7 @@ def main():
         get_messages(
             clear_label,
             labelIds=[vault_label_id],
-            q='older_than:15d'
+            q='older_than:60d'
         )
 
     except client.AccessTokenRefreshError:
