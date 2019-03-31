@@ -24,6 +24,7 @@ def main():
     Service.get()
 
     try:
+        vault_labelid = GmailLabel.get_id('vault')
         inbox_labelid = GmailLabel.get_id('INBOX', system=True)
         sent_inboxed_labelid = GmailLabel.get_id('meta/sent-inboxed')
 
@@ -34,7 +35,7 @@ def main():
             relabel_messages(
                 [message['id'] for message in messages],
                 [],
-                [inbox_labelid, sent_inboxed_labelid])
+                [inbox_labelid, sent_inboxed_labelid, vault_labelid])
 
         get_messages(
             apply_labels,
