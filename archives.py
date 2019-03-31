@@ -120,10 +120,11 @@ def main():
                     message_ids,
                     [],
                     label_ids)
-            relabel_messages(
-                personal_mail_messages_ids,
-                [],
-                [personal_mail_label_id])
+            if len(personal_mail_messages_ids) > 0:
+                relabel_messages(
+                    personal_mail_messages_ids,
+                    [],
+                    [personal_mail_label_id])
 
         get_messages(
             apply_related_label,
