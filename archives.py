@@ -24,8 +24,8 @@ def main():
     Service.get()
 
     try:
-        archives_labelid = GmailLabel.get_id('archives')
-        personal_mail_labelid = GmailLabel.get_id('archives/personal-mail')
+        vault_labelid = GmailLabel.get_id('vault')
+        personal_mail_labelid = GmailLabel.get_id('vault/personal-mail')
 
         def apply_personal_mail_label(messages):
             service = Service.get()
@@ -38,8 +38,8 @@ def main():
                         raise exception
 
                     for labelid in response['labelIds']:
-                        # ignore the archives label
-                        if labelid == archives_labelid:
+                        # ignore the vault label
+                        if labelid == vault_labelid:
                             continue
                         labelinfo = GmailLabel.get_label(labelid)
                         if labelinfo is None or labelinfo['type'] == 'user':
@@ -68,31 +68,31 @@ def main():
 
         get_messages(
             apply_personal_mail_label,
-            q='label:archives !in:inbox !label:archives/personal-mail')
+            q='label:vault !in:inbox !in:snoozed !label:vault/personal-mail !label:vault/fb')
 
         def apply_both_labels(messages):
             relabel_messages(
                 [message['id']
                  for message in messages],
-                [archives_labelid],
-                [])
+                [],
+                [vault_labelid])
 
         get_messages(
             apply_both_labels,
-            labelIds=[archives_labelid, personal_mail_labelid],
-            q='has:nouserlabels !in:inbox'
+            labelIds=[],
+            q='(has:nouserlabels OR label:vault/fb) !in:inbox !in:draft !in:snoozed !label:vault newer_than:14d'
         )
 
         def clear_label(messages):
             relabel_messages(
                 [message['id']
                  for message in messages],
-                [archives_labelid],
+                [vault_labelid],
                 [])
 
         get_messages(
             clear_label,
-            labelIds=[archives_labelid],
+            labelIds=[vault_labelid],
             q='older_than:14d'
         )
 
