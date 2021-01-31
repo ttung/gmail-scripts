@@ -60,6 +60,7 @@ def main():
                         labelinfo = GmailLabel.get_label(labelid)
                         if labelinfo is None or labelinfo['type'] == 'user':
                             del messages[message_id]
+                            break
 
                 return callback
 
