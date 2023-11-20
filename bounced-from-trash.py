@@ -42,7 +42,7 @@ def main():
                  for message in messages],
                 [trash_labelid],
                 [inbox_labelid, labelid]),
-            q='in:trash !from:tonytung@merly.org has:userlabels !label:meta/read-once !label:meta/bounced-from-trash')
+            q='in:trash !from:tonytung@merly.org has:userlabels !label:meta/read-once !label:meta/bounced-from-trash !label:meta/likely-spam')
 
     except client.AccessTokenRefreshError:
         print('The credentials have been revoked or expired, please re-run'
