@@ -12,7 +12,7 @@ class Service(object):
         if cls.service is None:
             cls.service, _ = sample_tools.init(
                 sys.argv, 'gmail', 'v1', __doc__, __file__,
-                scope='https://www.googleapis.com/auth/gmail.modify')
+                scope='https://mail.google.com/')
 
         return cls.service
 

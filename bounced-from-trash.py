@@ -24,25 +24,49 @@ def main():
     Service.get()
 
     try:
-        labelid = GmailLabel.get_id('meta/bounced-from-trash')
+        bounced_labelid = GmailLabel.get_id('meta/bounced-from-trash')
+        purge_labelid = GmailLabel.get_id('meta/purge-bounced')
         inbox_labelid = GmailLabel.get_id('INBOX', system=True)
         trash_labelid = GmailLabel.get_id('TRASH', system=True)
 
+        # If it's sent from me, except if it's to tripit, it's probably not
+        # meant for the trash.  Rescue it.
         get_messages(
             lambda messages: relabel_messages(
                 [message['id']
                  for message in messages],
                 [trash_labelid],
-                [inbox_labelid, labelid]),
+                [inbox_labelid, bounced_labelid]),
             q='in:trash from:tonytung !to:plans@tripit.com !label:meta/bounced-from-trash')
 
+        # If it has user labels, it's likely not meant for the trash.  Rescue it.
         get_messages(
             lambda messages: relabel_messages(
                 [message['id']
                  for message in messages],
                 [trash_labelid],
-                [inbox_labelid, labelid]),
+                [inbox_labelid, bounced_labelid]),
             q='in:trash !from:tonytung@merly.org has:userlabels !label:meta/read-once !label:meta/bounced-from-trash !label:meta/likely-spam')
+
+        # If it has both meta/bounced-from-trash and meta/purge-bounced, we
+        # really meant to delete it.
+        get_messages(
+            lambda messages: relabel_messages(
+                [message['id']
+                 for message in messages],
+                [],
+                [trash_labelid]),
+            q='label:meta/bounced-from-trash label:meta/purge-bounced')
+
+        # If it has only meta/purge-bounced, it's just an accidental victim and
+        # we did not really mean to delete it.
+        get_messages(
+            lambda messages: relabel_messages(
+                [message['id']
+                 for message in messages],
+                [purge_labelid],
+                []),
+            q='!label:meta/bounced-from-trash label:meta/purge-bounced')
 
     except client.AccessTokenRefreshError:
         print('The credentials have been revoked or expired, please re-run'

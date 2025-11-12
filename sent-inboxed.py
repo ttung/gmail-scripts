@@ -24,7 +24,7 @@ def main():
     Service.get()
 
     try:
-        vault_labelid = GmailLabel.get_id('vault')
+        vault_labelid = GmailLabel.get_id('zzz')
         inbox_labelid = GmailLabel.get_id('INBOX', system=True)
         sent_inboxed_labelid = GmailLabel.get_id('meta/sent-inboxed')
 

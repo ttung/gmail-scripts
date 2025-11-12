@@ -25,9 +25,9 @@ def main():
 
     try:
         #src_labelid = GmailLabel.get_id('czi-in')
-        #dst_labelid = GmailLabel.get_id('vault/work/czi')
+        #dst_labelid = GmailLabel.get_id('zzz/work/czi')
         src_labelid = GmailLabel.get_id('czi-sent')
-        dst_labelid = GmailLabel.get_id('vault/work/czi/sent')
+        dst_labelid = GmailLabel.get_id('zzz/work/czi/sent')
 
         def move(messages):
             relabel_messages(
